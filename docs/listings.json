@@ -1,0 +1,17 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/legacy/create-globes-with-basemap-and-cartopy.html",
+      "/legacy/colormaps-and-colorbars.html",
+      "/legacy/how-to-load-ss-gravity-data-in-python.html",
+      "/legacy/three-notebooks-to-jump-start-a-data-science-project.html",
+      "/legacy/how-to-add-cross-sections-to-opendtect.html",
+      "/legacy/how-to-add-maps-to-opendtect.html",
+      "/legacy/hillshading-with-matplotlib.html",
+      "/legacy/histogram-equalization-in-python-and-matplotlib.html",
+      "/legacy/basic-statistics-with-parkrun-data.html",
+      "/legacy/manipulate-segy-files-with-segy2segy.html"
+    ]
+  }
+]
