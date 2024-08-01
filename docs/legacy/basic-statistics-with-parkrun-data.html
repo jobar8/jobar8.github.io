@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.55">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr Joseph Barraud">
+<meta name="dcterms.date" content="2016-06-18">
+
+<title>Basic statistics with Parkrun data – josephbarraud.dev</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../rockall_bathy_64x64.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">josephbarraud.dev</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics">Descriptive Statistics</a></li>
+  <li><a href="#age-grade" id="toc-age-grade" class="nav-link" data-scroll-target="#age-grade">Age Grade</a></li>
+  <li><a href="#effect-of-sampling" id="toc-effect-of-sampling" class="nav-link" data-scroll-target="#effect-of-sampling">Effect of sampling</a></li>
+  <li><a href="#importing-data-and-making-plots-with-pandas-and-matplotlib" id="toc-importing-data-and-making-plots-with-pandas-and-matplotlib" class="nav-link" data-scroll-target="#importing-data-and-making-plots-with-pandas-and-matplotlib">Importing data and making plots with pandas and matplotlib</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Basic statistics with Parkrun data</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">blog</div>
+    <div class="quarto-category">python</div>
+    <div class="quarto-category">statistics</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr Joseph Barraud </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 18, 2016</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>This post might not have much to do with&nbsp;geophysics but it is another&nbsp;way to share information and ideas about my interests. I am comparing in &nbsp;a basic and simple way the results of a 5 km run at several locations in and around Leeds. In the process, I have learnt a couple of&nbsp;things about importing data in Python so I am sharing the code at the end as other fellow runners might find it useful.</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Last&nbsp;weekend, I had to change my usual parkrun routine and switch from Roundhay Park to Woodhouse Moor in Leeds. Parkrun is a weekly 5 km run organised every Saturday in hundreds of locations around the UK. It is free and it is timed by volunteers. More information&nbsp;at&nbsp;<a href="http://www.parkrun.org.uk/">parkrun.org.uk</a>.</p>
+<p>I am not a very good runner as I have only started to train (more or less…) regularly about a year ago. Parkrun is brilliant for me as it provides&nbsp;that regular rendez-vous with the clock, which is quite useful to check if I have made any progress. Indeed, I am not serious enough with my running to have&nbsp;a proper training plan and to time each of my runs.</p>
+<p>So, the 5 km parkrun at Roundhay Park, which is the closest to where I live, was cancelled on Saturday to make way for a stage of the <a href="http://leeds.triathlon.org/">World Triathlon Competition</a>. As many of my fellow runners, I had to go to one of the other parkrun locations around Leeds, and I chose Woodhouse Moor as it is the oldest parkrun in Leeds. Saturday was their 459th event!</p>
+<p>Timewise, I did quite well and I established a new <a href="http://www.parkrun.org.uk/woodhousemoor/results/weeklyresults/?runSeqNumber=459">Personal Best at 22:54</a>, which is more than 30 seconds better than my previous PB. I suspected I would do better than at Roundhay Park because the course at Roundhay is very challenging with a steep uphill section. Woodhouse Moor has a flat finish and is overall definitely easier on the legs! Or is it really?</p>
+<p>The time difference between Roundhay Park and Woodhouse Moor got me thinking and I thought I would have a look at some&nbsp;statistics to figure out if there is a genuine difference between the two courses. And since there are lots of data on the parkrun website, I decided to extent my analysis to other parkruns around Leeds and in nearby Bradford. I am therefore comparing in this post the results of the following runs: <a href="http://www.parkrun.org.uk/roundhay/">Roundhay</a>, <a href="http://www.parkrun.org.uk/woodhousemoor/">Woodhouse Moor</a>, <a href="http://www.parkrun.org.uk/crossflatts/">Cross Flatts</a>, <a href="http://www.parkrun.org.uk/templenewsam/">Temple Newsam</a>, <a href="http://www.parkrun.org.uk/bramley/">Bramley</a>, and&nbsp;<a href="http://www.parkrun.org.uk/bradford/">Bradford</a>.</p>
+</section>
+<section id="descriptive-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="descriptive-statistics">Descriptive Statistics</h2>
+<p>The initial idea is to look at some basic exploratory stats such as the mean, min and max values and see if we can draw some obvious conclusions about the difference and similarities between these six&nbsp;parkruns. First, drawing histograms should show us the distribution of running times. All the following plots have the same axes to make the comparison easier.</p>
+<p><img src="images/Woodhouse_458_04062016-300x239.png" class="img-fluid" alt="Woodhouse Moor #458 04/06/2016"> <img src="images/Roundhay_269_04062016-300x239.png" class="img-fluid" alt="Roundhay #269 04/06/2016"> <img src="images/Newsam_174_11062016-300x239.png" class="img-fluid" alt="Temple Newsam #174 11/06/2016"> <img src="images/Cross_Flatts_163_11062016-300x239.png" class="img-fluid" alt="Cross Flatts #163 11/06/2016"> <img src="images/Bramley_52_11062016-300x239.png" class="img-fluid" alt="Bramley #52 11/06/2016"> <img src="images/Bradford_313_04062016-300x239.png" class="img-fluid" alt="Bradford #313 04/06/2016"></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 8%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 6%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parkrun</th>
+<th>Runners</th>
+<th>Unknown %</th>
+<th>Male %</th>
+<th>Mean</th>
+<th>Std</th>
+<th>Min</th>
+<th>25%</th>
+<th>Median</th>
+<th>75%</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Woodhouse #458 04/06/2016</td>
+<td>421</td>
+<td>9.3%</td>
+<td>57.6%</td>
+<td>27:42</td>
+<td>6:33</td>
+<td>15:41</td>
+<td>23:20</td>
+<td>26:56</td>
+<td>30:39</td>
+<td>60:34</td>
+</tr>
+<tr class="even">
+<td>Roundhay #269 04/06/2016</td>
+<td>356</td>
+<td>5.9%</td>
+<td>58.8%</td>
+<td>28:19</td>
+<td>5:38</td>
+<td>17:45</td>
+<td>24:09</td>
+<td>27:37</td>
+<td>31:08</td>
+<td>47:52</td>
+</tr>
+<tr class="odd">
+<td>Temple Newsam #174 11/06/2016</td>
+<td>223</td>
+<td>5.4%</td>
+<td>66.4%</td>
+<td>28:30</td>
+<td>5:30</td>
+<td>17:32</td>
+<td>24:15</td>
+<td>28:10</td>
+<td>31:53</td>
+<td>43:00</td>
+</tr>
+<tr class="even">
+<td>Cross Flatts #163 11/06/2016</td>
+<td>116</td>
+<td>1.7%</td>
+<td>54.4%</td>
+<td>29:05</td>
+<td>6:56</td>
+<td>18:05</td>
+<td>23:38</td>
+<td>28:30</td>
+<td>33:36</td>
+<td>51:29</td>
+</tr>
+<tr class="odd">
+<td>Bramley #52 11/06/2016</td>
+<td>177</td>
+<td>6.8%</td>
+<td>53.3%</td>
+<td>30:27</td>
+<td>7:22</td>
+<td>18:48</td>
+<td>24:50</td>
+<td>29:22</td>
+<td>34:20</td>
+<td>53:04</td>
+</tr>
+<tr class="even">
+<td>Bradford #313 04/06/2016</td>
+<td>391</td>
+<td>5.4%</td>
+<td>56.8%</td>
+<td>30:13</td>
+<td>6:45</td>
+<td>18:04</td>
+<td>25:03</td>
+<td>29:09</td>
+<td>33:52</td>
+<td>55:22</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p>The table gives a summary of some of&nbsp;the most useful statistics, together with two percentages: the proportion of unknown runners, and the percentage of male runners.</p>
+<p>It looks like&nbsp;Woodhouse Moor is much “faster” than the others: the best individual time, and the mean and the median values are the smallest of the lot. Besides, the median is systematically smaller than the mean for all the runs, a clear sign that the distributions are asymmetrical. While most runners achieve a time better than about 33 minutes (look at the 75% percentile values), there is a trail of slower runners whose results bring the average up.</p>
+<p>However, comparing mean times between different runs might not be statistically significant if the spread of values is too large. <a href="https://en.wikipedia.org/wiki/Student%27s_t-test">Student’s t-test</a> is there to help. The following table shows the p-values of&nbsp;t-tests for the mean time at Woodhouse Moor compared with each of the other parks.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parkrun</th>
+<th>p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Roundhay</td>
+<td>0.181</td>
+</tr>
+<tr class="even">
+<td>Temple Newsam</td>
+<td>0.128</td>
+</tr>
+<tr class="odd">
+<td>Cross Flatts</td>
+<td>0.051</td>
+</tr>
+<tr class="even">
+<td>Bramley</td>
+<td>0.000</td>
+</tr>
+<tr class="odd">
+<td>Bradford</td>
+<td>0.000</td>
+</tr>
+</tbody>
+</table>
+<p>The test suggests that the results at Roundhay are actually pretty close to the ones at Woodhouse Moor because there is a relatively large (18.1%) probability&nbsp;of observing a difference as large as the one observed even if the two populations were identical. A p-value less than about 5% would be accepted as more significant.</p>
+<p>So it is not really clear if&nbsp;Roundhay is more difficult than Woodhouse Moor. Moreover,&nbsp;Roundhay is actually in second position, which is not bad for a hilly course. The type of runners, their age, their degree of fitness could be different in each park. And&nbsp;what about the four other runs, are they “slower” on average because their path is even more difficult? Or is it because their typical runners are also different? To answer these questions,&nbsp;we need to go further into the analysis and take other parameters into consideration.</p>
+</section>
+<section id="age-grade" class="level2">
+<h2 class="anchored" data-anchor-id="age-grade">Age Grade</h2>
+<p>To assess the “quality” of the runners, there is a useful variable, the <a href="http://www.runningforfitness.org/faq/agegrading">Age Grade</a>. This is calculated using the time and the age of the runner. By comparing a runner’s performance with the best performer for a given age, the age grade provides a normalised attribute that will allow us to compare&nbsp;runners with each other on more even terms.</p>
+<p>[<img src="images/Woodhouse_AG_458_04062016-300x239.png" class="img-fluid" alt="Woodhouse_AG_458_04062016">] [<img src="images/Roundhay_AG_269_04062016-300x239.png" class="img-fluid" alt="Roundhay_AG_269_04062016">] [<img src="images/Newsam_AG_174_11062016-300x239.png" class="img-fluid" alt="Newsam_AG_174_11062016">][<img src="images/Cross_Flatts_AG_163_11062016-300x239.png" class="img-fluid" alt="Cross_Flatts_AG_163_11062016">] [<img src="images/Bramley_AG_52_11062016-300x239.png" class="img-fluid" alt="Bramley_AG_52_11062016">][<img src="images/Bradford_AG_313_04062016-300x239.png" class="img-fluid" alt="Bradford_AG_313_04062016">]</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parkrun</th>
+<th>Runners</th>
+<th>Male %</th>
+<th>Mean</th>
+<th>Std</th>
+<th>Min</th>
+<th>25%</th>
+<th>Median</th>
+<th>75%</th>
+<th>Max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Woodhouse #458 04/06/2016</td>
+<td>382</td>
+<td>57.6%</td>
+<td>55.8</td>
+<td>9.8</td>
+<td>24.9</td>
+<td>49.1</td>
+<td>55.4</td>
+<td>62.0</td>
+<td>83.1</td>
+</tr>
+<tr class="even">
+<td>Roundhay #269 04/06/2016</td>
+<td>335</td>
+<td>58.8%</td>
+<td>54.1</td>
+<td>9.3</td>
+<td>28.8</td>
+<td>48.3</td>
+<td>54.0</td>
+<td>60.5</td>
+<td>77.7</td>
+</tr>
+<tr class="odd">
+<td>Temple Newsam #174 11/06/2016</td>
+<td>211</td>
+<td>66.4%</td>
+<td>53.7</td>
+<td>8.9</td>
+<td>33.5</td>
+<td>47.3</td>
+<td>53.7</td>
+<td>60.8</td>
+<td>75.2</td>
+</tr>
+<tr class="even">
+<td>Cross Flatts #163 11/06/2016</td>
+<td>114</td>
+<td>54.4%</td>
+<td>54.7</td>
+<td>10.1</td>
+<td>29.5</td>
+<td>47.4</td>
+<td>53.7</td>
+<td>61.6</td>
+<td>80.1</td>
+</tr>
+<tr class="odd">
+<td>Bramley #52 11/06/2016</td>
+<td>165</td>
+<td>53.3%</td>
+<td>50.8</td>
+<td>9.9</td>
+<td>26.5</td>
+<td>43.8</td>
+<td>50.8</td>
+<td>57.7</td>
+<td>73.9</td>
+</tr>
+<tr class="even">
+<td>Bradford #313 04/06/2016</td>
+<td>370</td>
+<td>56.8%</td>
+<td>52.3</td>
+<td>9.9</td>
+<td>27.6</td>
+<td>45.4</td>
+<td>51.6</td>
+<td>59.1</td>
+<td>75.5</td>
+</tr>
+</tbody>
+</table>
+<p>Once again, the age grades are better on average at Woodhouse Moor (55.8%), compared to anywhere else (54.1% at Roundhay). Let’s look at the p-values:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parkrun</th>
+<th>p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Roundhay</td>
+<td>0.019</td>
+</tr>
+<tr class="even">
+<td>Temple Newsam</td>
+<td>0.011</td>
+</tr>
+<tr class="odd">
+<td>Cross Flatts</td>
+<td>0.311</td>
+</tr>
+<tr class="even">
+<td>Bramley</td>
+<td>0.000</td>
+</tr>
+<tr class="odd">
+<td>Bradford</td>
+<td>0.000</td>
+</tr>
+</tbody>
+</table>
+<p>By removing the effect of age and gender in the comparison between the different runs, the age grade has made the statistics much clearer (the p-values are generally smaller). So runners perform better&nbsp;at Woodhouse Moor, whatever their age category or gender. But it could still be due to a different distribution of runners, for example if a lot of well-trained runners prefer to go to Woodhouse Moor rather than Roundhay.</p>
+</section>
+<section id="effect-of-sampling" class="level2">
+<h2 class="anchored" data-anchor-id="effect-of-sampling">Effect of sampling</h2>
+<p>The real test to assess the difficulty of a park would be to have exactly the same runners doing each run in a controlled test, ignoring the effect of weather. This is obviously not possible but I tried to simulate the experiment by sampling the results using the same distribution of runners.</p>
+<p>The runners are distributed in a non-uniform way across the various age categories, as shown on the following bar plot for Roundhay.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/Roundhay_Age_Categories_269_04062016.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Roundhay Age Categories (#269, 04062016)"><img src="images/Roundhay_Age_Categories_269_04062016.png" class="img-fluid figure-img" alt="Roundhay Age Categories (#269, 04062016)"></a></p>
+<figcaption>Roundhay Age Categories (#269, 04062016)</figcaption>
+</figure>
+</div>
+<p>The test&nbsp;consists first in sampling randomly 5 runners from each category (actually a selection of them because some categories contain fewer than 5 people). The mean age grade is then calculated and saved. This is done 100 times for each park (Roundhay and Woodhouse Moor). The results are shown with these two histograms of calculated means.</p>
+<p><img src="images/Roundhay_meanAG_269_04062016-300x223.png" class="img-fluid"> <img src="images/Woodhouse_meanAG_458_04062016-300x223.png" class="img-fluid"></p>
+<p>We have now obtained a clearer distinction between the two parks. The overlap between the two histograms is actually misleading because the mean age grade is better at Woodhouse Moor in 96 samples&nbsp;out of 100 (with p-values smaller than 0.1 in 31% of the cases). So, here you go, my impression&nbsp;that Woodhouse Moor is easier on the legs seems to be supported by the statistics!</p>
+<p>More could be said about these plots and tables. I will carry on my exploration of the parkrun data in another post. For a start, the same analysis could be repeated for more than one date.</p>
+</section>
+<section id="importing-data-and-making-plots-with-pandas-and-matplotlib" class="level2">
+<h2 class="anchored" data-anchor-id="importing-data-and-making-plots-with-pandas-and-matplotlib">Importing data and making plots with pandas and matplotlib</h2>
+<p>The analysis and the plots in this post were made in Python, with the help of the pandas and matplotlib libraries. I have written a few functions to read the data and create the plots, they are available in a module simply called <a href="https://github.com/jobar8/parkrun">parkrun</a>.</p>
+<p>As a simple example, here is the way to import a table of weekly results in pandas. First, you need to save the results in a text file. Once you are on your favourite parkrun website looking at the <a href="http://www.parkrun.org.uk/roundhay/results/latestresults/">page of results</a>, select and copy everything on the page (ctrl+A and ctrl+C), including the headers and the text at the bottom. Paste the results in a blank text file and save. The function&nbsp;<strong>importResults</strong> will convert this in a pandas DataFrame.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> parkrun</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>infile <span class="op">=</span> <span class="vs">r'.\\data\\Parkrun\_Woodhouse\_Results\_458\_04062016.txt'</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> parkrun.importResults(infile,report<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Note</strong>: For this to work properly, make sure you copy the page when it is displaying the banner at the top, otherwise the number of lines to skip at the beginning of the file will not match what is hard-coded in the function. But you can in fact modify this behaviour with the <strong>skiprows</strong> option.</p>
+<p>Next, in order to plot the histogram of times, use the <strong>time_hist</strong> function as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>parkrun.time_hist(results,title<span class="op">=</span><span class="st">'Woodhouse Moor'</span>,style<span class="op">=</span><span class="st">'ggplot'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This creates the following plot (the previous plots were made with the ‘bmh’ style).</p>
+<p><a href="images/Woodhouse_458_04062016_ggplot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="images/Woodhouse_458_04062016_ggplot.png" class="img-fluid"></a></p>
+<p>Please see the <a href="https://github.com/jobar8/parkrun">github repository</a> for more information about the other functions.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"selector":".lightbox","openEffect":"zoom","loop":false,"closeEffect":"zoom","descPosition":"bottom"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
