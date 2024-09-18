@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr Joseph Barraud">
+<meta name="dcterms.date" content="2016-07-04">
+
+<title>Histogram Equalization in Python and matplotlib – josephbarraud.dev</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../rockall_bathy_64x64.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">josephbarraud.dev</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#summary" id="toc-summary" class="nav-link active" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#scaling-and-the-choice-of-color-map" id="toc-scaling-and-the-choice-of-color-map" class="nav-link" data-scroll-target="#scaling-and-the-choice-of-color-map">Scaling&nbsp;and the choice of color map</a></li>
+  <li><a href="#the-power-of-the-colorbar" id="toc-the-power-of-the-colorbar" class="nav-link" data-scroll-target="#the-power-of-the-colorbar">The power of the colorbar</a></li>
+  <li><a href="#histogram-equalization" id="toc-histogram-equalization" class="nav-link" data-scroll-target="#histogram-equalization">Histogram equalization</a></li>
+  <li><a href="#contours" id="toc-contours" class="nav-link" data-scroll-target="#contours">Contours</a></li>
+  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation">Python implementation</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#links" id="toc-links" class="nav-link" data-scroll-target="#links">Links</a>
+  <ul class="collapse">
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#wikipedia" id="toc-wikipedia" class="nav-link" data-scroll-target="#wikipedia">Wikipedia</a></li>
+  <li><a href="#ted-talks" id="toc-ted-talks" class="nav-link" data-scroll-target="#ted-talks">TED Talks</a></li>
+  <li><a href="#blogs-and-articles" id="toc-blogs-and-articles" class="nav-link" data-scroll-target="#blogs-and-articles">Blogs and articles</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Histogram Equalization in Python and matplotlib</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">geophysics</div>
+    <div class="quarto-category">potential-field</div>
+    <div class="quarto-category">python</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr Joseph Barraud </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 4, 2016</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>When displaying geophysical&nbsp;data in a map, one may find it difficult to show both the presence of extremes and the subtle variations in the background signal. Histogram equalization is there to help, as it redistributes&nbsp;intensities and increases the&nbsp;contrast. In this new implementation for Python and matplotlib,&nbsp;the equalization is applied &nbsp;to the colormap rather than the data. This allows the user to show the real distribution of intensities&nbsp;on the colorbar. Other ways to improve the visualisation of anomalies and their amplitude are also presented.</p>
+<p>&nbsp;</p>
+</section>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p><a href="https://en.wikipedia.org/wiki/Geophysical_survey">Geophysical data</a> typically contain&nbsp;a huge range of values. This is not surprising: geophysicists are interested in anomalies, what is different from the average, i.e.&nbsp;abnormal. So for example, searching for ores or metals underground, one might use a <a href="http://www.glossary.oilfield.slb.com/Terms/a/aeromagnetic_survey.aspx">magnetometer</a> to find the presence of magnetic sources. The objective is in this case to locate what is magnetic against what is not, i.e.&nbsp;to find a coherent signal against the noisy background of “normal” rocks.</p>
+<p>But sometimes the objective is different: the geophysicist might need to highlight small changes in the background field, and in this case the large anomalies are disturbing the interpretation. This might happen when surveying for deep sources: their weak signal will be dwarfed by the large “noise” produced by shallow features.</p>
+<p>Visualising data can be a tricky business and a lot has been <a href="http://www.research.ibm.com/people/l/lloydt/color/color.HTM">written</a> or <a href="http://www.ted.com/talks/david_mccandless_the_beauty_of_data_visualization">said</a> on the subject. It all depends on what you are trying to demonstrate and the proper use of visualisation techniques can help with your goal. But some&nbsp;techniques might also introduce unreal features, or deceive the reader about the true intensity of the recorded anomalies.</p>
+<p>In this post, I am focusing on <a href="http://matplotlib.org/users/colormaps.html">colormaps</a> and I present histogram equalization as a way to enhance the display of geophysical data in maps. Its effect is compared to the standard linear scaling function. The implementation has been written in Python and makes use of the matplotlib library.</p>
+</section>
+<section id="scaling-and-the-choice-of-color-map" class="level2">
+<h2 class="anchored" data-anchor-id="scaling-and-the-choice-of-color-map">Scaling&nbsp;and the choice of color map</h2>
+<p>In the process of displaying&nbsp;gridded data with pseudo-colours, there are two important aspects: the scaling function (also called normalisation, or stretch, or classification) and the color map. A lot of authors have been concerned in the last 10 years or so about the use of the <a href="http://www.kennethmoreland.com/color-maps/">rainbow colormap</a> (called “jet” in MATLAB&nbsp;and matplotlib). New, more efficient and more rational colormaps have been <a href="https://mycarta.wordpress.com/2012/12/06/the-rainbow-is-deadlong-live-the-rainbow-part-5-cie-lab-linear-l-rainbow/">proposed</a> and some of them&nbsp;have now become the new default choice in both <a href="http://blogs.mathworks.com/steve/2014/10/13/a-new-colormap-for-matlab-part-1-introduction/">MATLAB</a> (“parula”) and <a href="http://matplotlib.org/style_changes.html">matplotlib</a> (“viridis”).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/4colormaps.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Four colour maps."><img src="images/4colormaps.png" class="img-fluid figure-img" style="width:50.0%" alt="Four colour maps."></a></p>
+<figcaption>Four colour maps.</figcaption>
+</figure>
+</div>
+<p>While this article&nbsp;focuses on&nbsp;the first part of the mapping process (scaling), the effect obviously depends a lot on the colormap in use. I use four colormaps here: <strong>jet</strong>, <strong>viridis</strong>, <strong>coolwarm</strong> and <strong>clra (geosoft)</strong>. The first three are available in matplotlib, the fourth one is the default colormap in <a href="http://www.geosoft.com/products/oasis-montaj/overview">Geosoft Oasis Montaj</a>, and is somehow considered as the standard choice for potential field applications (although this might change in the future as perceptually uniform colormaps become more prominent).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/lightness_4colormaps.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Lightness L* profile for four different colormaps: jet, viridis, coolwarm and geosoft clra"><img src="images/lightness_4colormaps.png" class="img-fluid figure-img" style="width:80.0%" alt="Lightness L* profile for four different colormaps: jet, viridis, coolwarm and geosoft clra"></a></p>
+<figcaption>Lightness <code>L*</code> profile for four different colormaps: jet, viridis, coolwarm and geosoft clra</figcaption>
+</figure>
+</div>
+<p>There are various ways to compare the qualities of colormaps (and again, this is not a post about colormaps) and one of the simplest is to calculate the lightness <code>L*</code> after conversion of the colours from the RGB to the <a href="https://en.wikipedia.org/wiki/Lab_color_space">CIELAB</a> colorspace.</p>
+<p>As seen on the <code>L*</code> profiles, the jet and clra (geosoft) colormaps show bumpy profiles with a few isoluminant portions (nearly constant lightness), which are one of the sources of&nbsp;criticism against this kind of rainbow-like colormaps. Thus,&nbsp;with such palettes, the observer would perceive&nbsp;variations only at colour boundaries (Borland and Talor, 2007).</p>
+<p>In contrast, viridis and coolwarm have been designed to show simple uniform variations in lightness, which are therefore supposed to match the underlying variations of the mapped quantity, improving the perception, or <em>interpretation</em> of the map (<a href="http://dx.doi.org/10.1007/978-3-642-10520-3_9">Moreland, 2009</a>).</p>
+<p>This last point naturally leads me to the object of this post: <em>a map is a representation of the data and it must serve the purpose of the interpreter</em>. If the scaling function is a linear interpolation (simply matching the minimum and maximum scalar values to the colours at the extremities of the palette), then the&nbsp;perceptually uniform colormap has achieved its goal: the observer can read the map directly to estimate the intensity of the field (or whatever quantity is displayed). However, this might not always be&nbsp;the best way to convey to the reader the entire&nbsp;content of&nbsp;the data. <em>It actually depends on the&nbsp;story you want to tell</em>.</p>
+<p>Let’s see how this works in practice with magnetic data, in an area where large&nbsp;variations in anomalies have been recorded. This example comes from an <a href="http://pubs.usgs.gov/of/2001/ofr-01-0061/html/nm_4017.htm">aeromagnetic survey</a> acquired in New Mexico for the USGS.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_histogram.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Histogram of magnetic data from the South Silver City survey (New Mexico)."><img src="images/mag_histogram.png" class="img-fluid figure-img" alt="Histogram of magnetic data from the South Silver City survey (New Mexico)."></a></p>
+<figcaption>Histogram of magnetic data from the South Silver City survey (New Mexico).</figcaption>
+</figure>
+</div>
+<p>Typically for magnetic data, the minimum (-1850 nT) and the maximum (2220 nT) values are way outside the bulk of the data, which shows roughly a gaussian distribution, as shown on the histogram. This means that about 95% of the intensities&nbsp;are in the interval <code>[mean - 2*sigma, mean + 2*sigma]</code>, which is about <code>[-240,362]</code>.</p>
+<p>Using the default options of the <a href="http://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.imshow"><code>imshow()</code></a> function of the <code>matplotlib.pyplot</code> module, the following map of the magnetic anomalies can be obtained.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_jet_no_stretch_nohs_linear.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Magnetic anomalies in an area in New Mexico. The “jet” rainbow colormap is used together with a linear scale (no stretch) and a standard colorbar."><img src="images/mag_jet_no_stretch_nohs_linear.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The “jet” rainbow colormap is used together with a linear scale (no stretch) and a standard colorbar."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The “jet” rainbow colormap is used together with a linear scale (no stretch) and a standard colorbar.</figcaption>
+</figure>
+</div>
+<p>If the objective of the map was simply to locate the largest anomalies, then it is not so bad. The two or three dark blue and red&nbsp;blobs in southern central region of the survey are well visible against the greenish&nbsp;background. However, looking for additional information in this nearly uniform background, the bright yellow and cyan patches compete to drag our attention. It is confusing.</p>
+<p>Let’s see how viridis performs:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_viridis_no_stretch_nohs_linear.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a standard colorbar."><img src="images/mag_viridis_no_stretch_nohs_linear.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a standard colorbar."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a standard colorbar.</figcaption>
+</figure>
+</div>
+<p>The minima and maxima are still clearly identified&nbsp;and&nbsp;this time the rest of the map&nbsp;contains brighter yellow spots that are easier to differentiate against the blue-green background that is supposed to correspond to the “absence” of magnetic material (zero magnetic anomaly). That’s&nbsp;better.</p>
+</section>
+<section id="the-power-of-the-colorbar" class="level2">
+<h2 class="anchored" data-anchor-id="the-power-of-the-colorbar">The power of the colorbar</h2>
+<p>The maps in this post have actually been made using my own modified version of the <code>imshow</code> function. The idea is to have access in a single tool&nbsp;to a variety of functions&nbsp;I often use together with <code>imshow</code>. I have also created additional&nbsp;options and&nbsp;I am going to document&nbsp;them in this post and the next ones.</p>
+<p>One of the simplest ways to improve the existing map is&nbsp;to change the labels on the colorbar. Instead of showing equally spaced numbers like on the previous plots, I think showing basic descriptive statistics on the colorbar is more informative and useful. This is how it looks:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_viridis_no_stretch_nohs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a modified&nbsp;colorbar that indicates basic descriptive statistics."><img src="images/mag_viridis_no_stretch_nohs.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a modified&nbsp;colorbar that indicates basic descriptive statistics."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The viridis colormap is used together with a linear scale (no stretch) and a modified&nbsp;colorbar that indicates basic descriptive statistics.</figcaption>
+</figure>
+</div>
+<p>So now the labels on the colorbar indicate, from top to bottom: <strong>max</strong>, <strong>mean+2*sigma</strong>, <strong>mean</strong>, <strong>mean-2*sigma</strong>, and <strong>min</strong> (sigma being the <em>standard deviation</em>). Since a map is rarely given with the histogram of the data it contains, putting statistical information on the colorbar makes it easier for the user to understand the distribution of the data.</p>
+<p>In our magnetic case, this simply confirms the impression the reader&nbsp;must have when seeing this mostly blue-green image: most of the data is “compressed” in a narrow range of values.</p>
+<p>Here are two&nbsp;other examples with the coolwarm and geosoft <em>clra</em> colormaps.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_coolwarm_no_stretch_nohs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Magnetic anomalies in an area in New Mexico. The coolwarm colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics."><img src="images/mag_coolwarm_no_stretch_nohs.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The coolwarm colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The coolwarm colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics.</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_geosoft_no_stretch_nohs-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Magnetic anomalies in an area in New Mexico. The geosoft colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics."><img src="images/mag_geosoft_no_stretch_nohs-1.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The geosoft colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The geosoft colormap is used together with a linear scale (no stretch) and a modified colorbar that indicates basic descriptive statistics.</figcaption>
+</figure>
+</div>
+<p>The geosoft colormap is emphasising thanks to multiple colour shifts the presence of small variations around the mean of the data, something jet could not do because of the long stretch of cyan and green colours in the middle of the colormap. The addition of the bright pink at the top of the geosoft colormap also&nbsp;helps separating the extremes from the average. This explains why this colormap has been quite popular for mapping potential field data.</p>
+</section>
+<section id="histogram-equalization" class="level2">
+<h2 class="anchored" data-anchor-id="histogram-equalization">Histogram equalization</h2>
+<p><a href="https://en.wikipedia.org/wiki/Histogram_equalization">Histogram equalization</a> (or simply equalization) has been used&nbsp;to&nbsp;increase the contrast of images for a long time. It was particularly useful to improve early satellite images that could&nbsp;look a bit dull through the haze of the atmosphere.</p>
+<p>Equalization works by spreading out intensity values more evenly. The transformation aims at flattening the histogram,&nbsp;rebalancing the&nbsp;intensities over the whole span of colours (or&nbsp;shades of grey). Here is the equalized histogram of the magnetic data we have seen earlier.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_histogram_equalized.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Equalized histogram of magnetic data from the South Silver City survey (New Mexico)."><img src="images/mag_histogram_equalized.png" class="img-fluid figure-img" style="width:80.0%" alt="Equalized histogram of magnetic data from the South Silver City survey (New Mexico)."></a></p>
+<figcaption>Equalized histogram of magnetic data from the South Silver City survey (New Mexico).</figcaption>
+</figure>
+</div>
+<p>There are two ways to implement histogram equalization, either as an image change (like in <a href="http://scikit-image.org/docs/stable/api/skimage.exposure.html#skimage.exposure.equalize_hist">scikit-image</a>), or as a colormap change. I have chosen the second option as it has two advantages: the data remain untouched and the new colorbar clearly shows the distortion applied to the colormap.</p>
+<p>The effect of histogram equalization depends on the input data so the new colormap is unique and cannot be re-used for a different data set.</p>
+<p>Here is an example with the geosoft <em>clra</em> colormap.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_geosoft_equalization_nohs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Magnetic anomalies in an area in New Mexico. The geosoft clra colormap is used together with histogram equalization and a modified colorbar that indicates basic descriptive statistics."><img src="images/mag_geosoft_equalization_nohs.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The geosoft clra colormap is used together with histogram equalization and a modified colorbar that indicates basic descriptive statistics."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The geosoft <em>clra</em> colormap is used together with histogram equalization and a modified colorbar that indicates basic descriptive statistics.</figcaption>
+</figure>
+</div>
+<p>The result might look dramatic but that is intended. Minute variations in the data are now revealed and some sharp lineaments are immediately visible. This new map makes the&nbsp;<em>structural&nbsp;interpretation</em> of the magnetic data easier because for this purpose I am more interested in spatial correlations and the shape of features than in their intensity. I also <em>see</em> all the tiny anomalies, as if the instrument was suddenly much more sensitive.</p>
+<p>The application and effects of such severe contrast enhancement techniques should not be concealed or minimized. The new colorbar makes it obvious&nbsp;that large portions of the data are displayed with pretty much the same colour (pink or blue). The idea of histogram equalization is not to pretend that the data is much better than it is in reality. The change&nbsp;is only misleading&nbsp;if the information about it is not provided clearly and honestly, in the legend or in the caption.</p>
+</section>
+<section id="contours" class="level2">
+<h2 class="anchored" data-anchor-id="contours">Contours</h2>
+<p>Another way to remind the reader of the map that some of the anomalies are much larger than the others is to add contours. Contours are drawn at regular intervals so one obtains a map that combines the best of both worlds: the enhanced contrast of the non-linear colormap and the sense of scale offered by the evenly-spaced&nbsp;contour lines.</p>
+<p>With matplotlib, it is even possible to also have the contour lines on the colorbar! Here is an example with the coolwarm colormap.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/mag_coolwarm_equalization_nohs_contours-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Magnetic anomalies in an area in New Mexico. The map illustrates the use of histogram equalization with the coolwarm colormap. The addition of contours at regular intervals provides a linear scale to help estimating the intensity of the anomalies."><img src="images/mag_coolwarm_equalization_nohs_contours-1.png" class="img-fluid figure-img" alt="Magnetic anomalies in an area in New Mexico. The map illustrates the use of histogram equalization with the coolwarm colormap. The addition of contours at regular intervals provides a linear scale to help estimating the intensity of the anomalies."></a></p>
+<figcaption>Magnetic anomalies in an area in New Mexico. The map illustrates the use of histogram equalization with the coolwarm colormap. The addition of contours at regular intervals provides a linear scale to help estimating the intensity of the anomalies.</figcaption>
+</figure>
+</div>
+</section>
+<section id="python-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="python-implementation">Python implementation</h2>
+<p>I have implemented histogram equalization in a Python module called <a href="https://github.com/jobar8/graphics">graphics</a>. It&nbsp;contains two modules:</p>
+<ul>
+<li><strong><code>colors</code></strong>: this contains the definition of new colormaps for matplotlib (essentially clra and clrb from Geosoft Oasis Montaj).</li>
+<li><strong><code>graphics</code></strong>: a collection of functions for manipulating and displaying grid data.</li>
+</ul>
+<p>The main function in graphics is <code>imshow_hs</code>, which is my modified version of <code>pyplot.imshow</code>. It offers a lot of parameters, some of them are simply imported from other pyplot functions (like <code>colorbar</code> and <code>contours</code>), and some of them are new (equalization and improved hillshading). See the documentation in the code on GitHub for more information. I have also prepared a <a href="http://nbviewer.jupyter.org/github/jobar8/graphics/blob/master/how_to_use_imshow_hs.ipynb">Jupyter notebook</a> that goes through some of the main options.</p>
+<p>The hillshading option will be the subject&nbsp;of <a href="../legacy/hillshading-with-matplotlib.html">another post</a>.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>I have added histogram equalization to a modified version of matplotlib’s <code>imshow</code>. This is a quick and easy way to boost the contrast of images and it helps visualizing the full content of geophysical data.</p>
+<p>Manipulating data in this way might sound suspicious since&nbsp;the current evolution of scientific visualization software is to promote the unbiased, neutral display of data with the use of perceptually uniform colormaps. However, pseudocoloring is&nbsp;not the only way to communicate about the amplitudes and variations of data: descriptive statistics, hillshading, contours and 2D profiles are also quite efficient, if not better.</p>
+<p>There are lots of&nbsp;methods&nbsp;to improve the “look” of geophysical data and geophysicists are good at inventing all sorts of them: rescaling, clipping, filtering or applying derivatives can all contribute to an enhanced picture that is easier to interpret.</p>
+<p>The important thing is to be honest and clear about the tricks that have been applied to create that pretty picture. This is why colorbars and figure captions are important!</p>
+</section>
+<section id="links" class="level2">
+<h2 class="anchored" data-anchor-id="links">Links</h2>
+<section id="data" class="level3">
+<h3 class="anchored" data-anchor-id="data">Data</h3>
+<p>USGS magnetic data: <a href="http://pubs.usgs.gov/of/2001/ofr-01-0061/html/nm_4017.htm">South Silver City (4017) Magnetic Anomaly Map</a></p>
+</section>
+<section id="wikipedia" class="level3">
+<h3 class="anchored" data-anchor-id="wikipedia">Wikipedia</h3>
+<p><a href="https://en.wikipedia.org/wiki/Histogram_equalization">https://en.wikipedia.org/wiki/Histogram_equalization</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Exploration_geophysics">https://en.wikipedia.org/wiki/Exploration_geophysics</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Lab_color_space">https://en.wikipedia.org/wiki/Lab_color_space</a></p>
+</section>
+<section id="ted-talks" class="level3">
+<h3 class="anchored" data-anchor-id="ted-talks">TED Talks</h3>
+<p><a href="http://www.ted.com/talks/david_mccandless_the_beauty_of_data_visualization">http://www.ted.com/talks/david_mccandless_the_beauty_of_data_visualization</a> <a href="http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen">http://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen</a></p>
+</section>
+<section id="blogs-and-articles" class="level3">
+<h3 class="anchored" data-anchor-id="blogs-and-articles">Blogs and articles</h3>
+<p>Matplotlib doc:&nbsp;<a href="http://matplotlib.org/users/colormaps.html">Choosing Colormaps</a></p>
+<p>MyCarta: <a href="https://mycarta.wordpress.com/2012/05/12/the-rainbow-is-dead-long-live-the-rainbow-part-1/">The rainbow is dead…long live the rainbow!</a></p>
+<p>Kenneth Moreland:&nbsp;<a href="http://www.kennethmoreland.com/color-maps">Diverging Color Maps for Scientific Visualization</a></p>
+<p>Borland, David, and Russell M. Taylor Ii. “Rainbow Color Map (Still) Considered Harmful.” <em>IEEE Computer Graphics and Applications</em> 27.2 (2007): 14-17. DOI: <a href="http://dx.doi.org/10.1109/MCG.2007.323435">10.1109/MCG.2007.323435</a></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/jobar8\.github\.io\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+          // target, if specified
+          link.setAttribute("target", "_blank");
+          if (link.getAttribute("rel") === null) {
+            link.setAttribute("rel", "noopener");
+          }
+          // default icon
+          link.classList.add("external");
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"selector":".lightbox","openEffect":"zoom"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
