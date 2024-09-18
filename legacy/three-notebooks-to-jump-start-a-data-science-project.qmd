@@ -1,0 +1,72 @@
+---
+title: "Three notebooks to jump start a data science project"
+date: "2017-06-19"
+categories: 
+  - "blog"
+  - "data-science"
+  - "machine-learning"
+  - "python"
+tags: 
+  - "data-visualisation"
+---
+
+## Introduction
+
+I was in Paris last week for the [2017 Subsurface Hackathon](https://agilescientific.com/blog/2017/6/13/le-grand-hack). It was superbly organised by Agile Scientific and Total. Together, they managed to draw a large (about 60 persons) and diverse crowd to participate to the challenge of producing some working and usable software in only two days. The event took place over the weekend just before the [EAGE conference](http://events.eage.org/en/2017/79th-eage-conference-and-exhibition-2017), so you could tell people were highly motivated to come and share the experience.
+
+I was with Martin Bentley in a small team called Water Underground. While Martin was actually sitting in Port Elizabeth in South Africa, I was in La Defense in Total's brand new offices. Our idea was to mine some groundwater data from the [Geological Survey of the Netherlands](https://www.tno.nl/en/focus-areas/energy/geological-survey-of-the-netherlands/) and use the measurements to predict the evolution of water depth and composition both in space and time. Unfortunately, we did not manage to complete the project. As any data scientist would tell you, the first (and somewhat less rewarding) steps of any data science project can take a lot of time, generally more than expected...
+
+## The Data Science Process
+
+There are loads of resources out there that would detail the various stages of a [data science project](http://www.kdnuggets.com/2016/03/data-science-process.html). At the end of the day, any _research_ project would probably follow this sort of process:
+
+- data acquisition
+- data preparation, cleaning and transformation
+- data exploration
+- modelling and predictive analysis
+- interpretation of the results
+- communication of the results
+
+Having spent a couple of days on the _first three steps_ of this process, I decided I could share the code and the notebooks I wrote because some of this material is rather generic and can easily be re-used for other projects. There are a few tips and tricks about how to use pandas and Python notebooks for data analysis, so hopefully those can be useful to anyone interested in starting this sort of project.
+
+The notebooks are available in a [GitHub repository](https://github.com/jobar8/subsurface_hackathon_2017).
+
+## Groundwater data in the Netherlands
+
+The dataset we used (and barely started to explore...) is a set of groundwater wells in the Netherlands. Groundwater levels have been measured in some locations on a monthly basis since the 1950's. So it's a truly 4D dataset: you can either look at single wells in isolation for time-series analysis, or construct a surface of the water table at a given time by interpolating between points.
+
+To come back to the initial steps of the data science project, here are brief descriptions of what can be found in the notebooks for each step.
+
+### Data acquisition and cleaning
+
+![](images/dinoloket.png)
+
+The data files were selected manually and downloaded from the [DINOloket website](https://www.dinoloket.nl/en). The files are provided either as CSV files, or as space-delimited text files. Large headers of variable dimensions make the import into pandas unnecessarily difficult. Additionally, the headers are in Dutch. Thankfully, Martin managed to translate the text and found the logic in the headers. This is all described in the METADATA file on his own [GitHub project](https://github.com/mtb-za/eage-hackathon-2017).
+
+Some basic exploratory analysis is carried out at the end of the notebook.
+
+The notebook for this step is [here](https://github.com/jobar8/subsurface_hackathon_2017/blob/master/notebooks/1.%20Levels%20data%20loading.ipynb).
+
+
+### Data transformation
+
+That's where it starts to be interesting. In this [second notebook](https://github.com/jobar8/subsurface_hackathon_2017/blob/master/notebooks/2.%20Create%20surfaces%20from%20data%20points.ipynb), I demonstrate how to create a surface from well data by using the Scipy function [griddata](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.griddata.html#scipy.interpolate.griddata). Gridding all the points turns out to be meaningless because the measurements do not cover the same period for all the wells.
+
+Resampling the data in time becomes therefore essential. This is where the strength of pandas is obvious as this step can be done with only one line of code.
+
+Once the depth measurements have been resampled to follow a constant frequency at all the wells, it becomes very easy to make a selection for a given month and grid up the result. Here is an example:
+
+![Surface of the water table, gridded from well measurements](images/water_table_surface_july_1996.png)
+
+ 
+
+### Data exploration
+
+The third and [final notebook](https://github.com/jobar8/subsurface_hackathon_2017/blob/master/notebooks/3.%20Interactive%20plots%20with%20ipywidgets.ipynb) provides a convenient way to explore this large dataset. Using the [ipywidgets](https://ipywidgets.readthedocs.io/en/latest/index.html) library, I create two interactive plots, one for the surface and one for the time series. A slider can be used to select the date and a dropdown menu gives access to the list of wells.
+
+![Surface of the water table (interactive display in the notebook)](images/water_table_surface_march_1974.png)
+
+
+## Conclusion
+
+The hackathon was a great opportunity to meet a lot of people interested in open source software, machine learning and geoscience. I think the time and efforts that went into our project, even it was not completed, should also benefit the wider community. So here is my contribution. If you ever pick up this project where we left it and make some more progress, please get in touch!

@@ -1,0 +1,29 @@
+project:
+  type: website
+  output-dir: docs
+  preview:
+    port: 6459
+    browser: false
+    watch-inputs: true
+    navigate: true
+
+website:
+  title: "josephbarraud.dev"
+  favicon: rockall_bathy_64x64.png
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+    right:
+      - about.qmd
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true
+    link-external-icon: true
+    link-external-newwindow: true
+
+author:
+  - name: Dr Joseph Barraud

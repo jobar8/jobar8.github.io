@@ -1,0 +1,17 @@
+---
+title: "About"
+toc: false
+---
+
+## Dr Joseph Barraud
+
+I have more than 10 years of experience in the oil & gas exploration industry and I have created Geophysics Labs in March 2016 to develop my ideas for new and original interpretation tools. I am also an experienced researcher and this gives me a unique perspective on both the industrial and the academic worlds. Since my PhD in 2001 at the University of Lyon (France), I have regularly published my work in renowned academic journals, as well as in more industry-related publications.
+
+I have accumulated a wealth of experience on all the various aspects of potential field interpretation: structural interpretation, 2D/3D modelling and integration with seismic data. I worked as lead interpreter for many proprietary or multi-client studies, regional or local, in various tectonic settings:
+
+- fold-and-thrust belts (USA, Algeria, Turkey)
+- passive margins (North Atlantic, West Africa)
+- salt basins (Gabon)
+- rift systems (Kenya, Uganda)
+
+I am a specialist of gravity gradiometry, having worked with full-tensor gradiometer (FTG) data for 9 years. Using a new technology like the FTG gave me the incentive for creating innovative tools that could utilise the full potential of the technique. I am focusing my R&D effort on the improvements of quantitative interpretation methods and on the integration of their results with seismic data.
