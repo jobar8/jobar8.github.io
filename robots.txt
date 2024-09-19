@@ -1,1 +1,1 @@
-Sitemap: https://jobar8.github.io/sitemap.xml
+Sitemap: https://josephbarraud.dev/sitemap.xml
