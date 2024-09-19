@@ -2,50 +2,50 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jobar8.github.io/about.html</loc>
-    <lastmod>2024-09-18T19:29:32.543Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jobar8.github.io/legacy/basic-statistics-with-parkrun-data.html</loc>
-    <lastmod>2024-09-18T19:29:31.888Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jobar8.github.io/legacy/colormaps-and-colorbars.html</loc>
-    <lastmod>2024-09-18T19:29:31.899Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
   </url>
   <url>
     <loc>https://jobar8.github.io/legacy/create-globes-with-basemap-and-cartopy.html</loc>
-    <lastmod>2024-09-18T19:29:31.899Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
   </url>
   <url>
     <loc>https://jobar8.github.io/legacy/hillshading-with-matplotlib.html</loc>
-    <lastmod>2024-09-18T19:29:31.932Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jobar8.github.io/legacy/how-to-load-ss-gravity-data-in-python.html</loc>
-    <lastmod>2024-09-18T19:29:31.953Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
   </url>
   <url>
     <loc>https://jobar8.github.io/legacy/histogram-equalization-in-python-and-matplotlib.html</loc>
-    <lastmod>2024-09-18T19:29:31.932Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jobar8.github.io/legacy/manipulate-segy-files-with-segy2segy.html</loc>
-    <lastmod>2024-09-18T19:29:32.510Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jobar8.github.io/legacy/three-notebooks-to-jump-start-a-data-science-project.html</loc>
-    <lastmod>2024-09-18T19:29:32.521Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.967Z</lastmod>
   </url>
   <url>
     <loc>https://jobar8.github.io/legacy/how-to-add-cross-sections-to-opendtect.html</loc>
-    <lastmod>2024-09-18T19:29:31.942Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.967Z</lastmod>
   </url>
   <url>
-    <loc>https://jobar8.github.io/legacy/how-to-add-maps-to-opendtect.html</loc>
-    <lastmod>2024-09-18T19:29:31.942Z</lastmod>
+    <loc>https://jobar8.github.io/legacy/three-notebooks-to-jump-start-a-data-science-project.html</loc>
+    <lastmod>2024-09-19T08:29:24.045Z</lastmod>
   </url>
   <url>
     <loc>https://jobar8.github.io/index.html</loc>
-    <lastmod>2024-09-18T19:29:32.543Z</lastmod>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jobar8.github.io/legacy/manipulate-segy-files-with-segy2segy.html</loc>
+    <lastmod>2024-09-19T08:29:24.045Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jobar8.github.io/legacy/basic-statistics-with-parkrun-data.html</loc>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jobar8.github.io/legacy/colormaps-and-colorbars.html</loc>
+    <lastmod>2024-09-19T08:29:23.966Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jobar8.github.io/legacy/how-to-add-maps-to-opendtect.html</loc>
+    <lastmod>2024-09-19T08:29:23.967Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jobar8.github.io/legacy/how-to-load-ss-gravity-data-in-python.html</loc>
+    <lastmod>2024-09-19T08:29:23.967Z</lastmod>
   </url>
 </urlset>
