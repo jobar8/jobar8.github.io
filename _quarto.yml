@@ -9,6 +9,7 @@ project:
 
 website:
   title: "josephbarraud.dev"
+  site-url: https://josephbarraud.dev
   favicon: rockall_bathy_64x64.png
   navbar:
     left:
@@ -16,6 +17,11 @@ website:
         text: Home
     right:
       - about.qmd
+      - icon: github
+        href: https://github.com/jobar8
+        rel: me
+      - icon: linkedin
+        href: https://www.linkedin.com/in/josephbarraud
 
 format:
   html:
