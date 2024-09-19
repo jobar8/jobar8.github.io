@@ -1,0 +1,16 @@
+---
+title: "josephbarraud.dev"
+listing:
+  contents: legacy
+  sort: "date desc"
+  type: grid
+  categories: true
+---
+
+Geophysics, Python and More…
+
+::: {.callout}
+The following articles were written between 2016 and 2018 for my website [geophysicslabs.com](https://geophysicslabs.com). While the website (and the consultancy company I had created)
+sadly no longer exists, I have moved the old Wordpress site to Github Pages, and converted the files to [Quarto](https://quarto.org/) documents.
+:::
+
